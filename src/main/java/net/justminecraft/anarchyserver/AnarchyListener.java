@@ -46,6 +46,8 @@ public class AnarchyListener implements Listener {
             e.getPlayer().getActivePotionEffects().forEach(potionEffect -> e.getPlayer().removePotionEffect(potionEffect.getType()));
             e.getPlayer().getInventory().clear();
             e.getPlayer().getEquipment().clear();
+            e.getPlayer().setExp(0);
+            e.getPlayer().setLevel(0);
             
             if (e.getPlayer().getBedSpawnLocation() != null) {
                 e.getPlayer().teleport(e.getPlayer().getBedSpawnLocation());
@@ -157,7 +159,9 @@ public class AnarchyListener implements Listener {
         
         Discord.send(discordMessage);
         
-        event.getEntity().kickPlayer(event.getDeathMessage() + "\nYou are banned for 24 hours!");
-        Bukkit.getBanList(BanList.Type.NAME).addBan(event.getEntity().getName(), event.getDeathMessage(), new Date(System.currentTimeMillis() + 24 * 60 * 60 * 1000), null);
+        Bukkit.getScheduler().runTaskLater(anarchyServer, () -> {
+            event.getEntity().kickPlayer(event.getDeathMessage() + "\nYou are banned for 24 hours!");
+            Bukkit.getBanList(BanList.Type.NAME).addBan(event.getEntity().getName(), event.getDeathMessage(), new Date(System.currentTimeMillis() + 24 * 60 * 60 * 1000), null);
+        }, 100);
     }
 }
