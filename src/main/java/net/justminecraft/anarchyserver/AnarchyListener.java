@@ -34,7 +34,7 @@ public class AnarchyListener implements Listener {
             Bukkit.getScheduler().runTask(anarchyServer, () -> {
                 Bukkit.broadcastMessage(ChatColor.LIGHT_PURPLE + "" + ChatColor.BOLD + "Welcome " + e.getPlayer().getName() + " to JustAnarchy!");
                 Bukkit.broadcastMessage(ChatColor.LIGHT_PURPLE + "This is hardcore - if you die you'll be banned for 24 hours!");
-                Bukkit.broadcastMessage(ChatColor.LIGHT_PURPLE + "The only rule on this server is no hacking! Good luck!");
+                Bukkit.broadcastMessage(ChatColor.LIGHT_PURPLE + "There are no rules here! Good luck!");
             });
             e.getPlayer().teleport(Bukkit.getWorlds().get(0).getSpawnLocation());
         }
