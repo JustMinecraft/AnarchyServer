@@ -1,10 +1,13 @@
 package net.justminecraft.anarchyserver;
 
-import org.bukkit.BanList;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
+import net.justminecraft.survivalranks.Points;
+import net.justminecraft.survivalranks.PointsManager;
+import net.justminecraft.survivalranks.SurvivalRanks;
+import org.bukkit.*;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Projectile;
+import org.bukkit.entity.Tameable;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -60,6 +63,27 @@ public class AnarchyListener implements Listener {
         }
     }
     
+    private Player getClosestPlayer(Player location) {
+        double closestDistance = 128;
+        Player closest = null;
+        
+        for (Player player : location.getWorld().getPlayers()) {
+            if (player != location) {
+                double distance = distance(player.getLocation(), location.getLocation());
+                if (distance < closestDistance) {
+                    closestDistance = distance;
+                    closest = player;
+                }
+            }
+        }
+        
+        return closest;
+    }
+
+    private double distance(Location a, Location b) {
+        return Math.max(Math.abs(a.getX() - b.getX()), Math.abs(a.getZ() - b.getZ()));
+    }
+
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onPlayerDeath(PlayerDeathEvent event) {
         Player killer = null;
@@ -67,13 +91,31 @@ public class AnarchyListener implements Listener {
         if (event.getEntity().getLastDamageCause() instanceof EntityDamageByEntityEvent) {
             Entity killerEntity = ((EntityDamageByEntityEvent) event.getEntity().getLastDamageCause()).getDamager();
             
+            while (killerEntity instanceof Projectile && ((Projectile) killerEntity).getShooter() instanceof Entity) {
+                killerEntity = (Entity) ((Projectile) killerEntity).getShooter();
+            }
+            
+            while (killerEntity instanceof Tameable && ((Tameable) killerEntity).getOwner() instanceof Entity) {
+                killerEntity = (Entity) ((Tameable) killerEntity).getOwner();
+            }
+            
             if (killerEntity instanceof Player) {
                 killer = (Player) killerEntity;
             }
         }
         
         if (killer == null) {
-            
+            killer = getClosestPlayer(event.getEntity());
+        }
+        
+        int halfPoints = anarchyServer.getSurvivalRanks().getPoints(event.getEntity()).getPoints() / 2;
+        anarchyServer.getSurvivalRanks().getPoints(event.getEntity()).scalePoints(0.5);
+        anarchyServer.getSurvivalRanks().updateRank(event.getEntity());
+        
+        if (killer != null) {
+            anarchyServer.getSurvivalRanks().getPoints(killer).incrementPoints(halfPoints);
+            Player k = killer;
+            Bukkit.getScheduler().runTask(anarchyServer, () -> k.sendMessage(ChatColor.GREEN + " + " + halfPoints + " points"));
         }
         
         event.getEntity().kickPlayer(event.getDeathMessage() + "\nYou are banned for 24 hours!");
