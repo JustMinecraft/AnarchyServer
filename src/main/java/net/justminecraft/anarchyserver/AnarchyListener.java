@@ -12,6 +12,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerKickEvent;
@@ -81,6 +82,37 @@ public class AnarchyListener implements Listener {
 
     private double distance(Location a, Location b) {
         return Math.max(Math.abs(a.getX() - b.getX()), Math.abs(a.getZ() - b.getZ()));
+    }
+    
+    @EventHandler(ignoreCancelled = true)
+    public void onPlayerDamage(EntityDamageEvent event) {
+        if (event.getEntity() instanceof Player && event.getEntity().getWorld() == Bukkit.getWorlds().get(0)) {
+            if (distance(event.getEntity().getLocation(), event.getEntity().getWorld().getSpawnLocation()) <= Bukkit.getSpawnRadius()) {
+                event.setCancelled(true);
+            } else if (distance(event.getEntity().getLocation(), event.getEntity().getWorld().getSpawnLocation()) <= Bukkit.getSpawnRadius() * 2
+                    && event.getCause() == EntityDamageEvent.DamageCause.FALL) {
+                event.setCancelled(true);
+            }
+        }
+    }
+
+    @EventHandler(ignoreCancelled = true)
+    public void onPlayerDamageByEvent(EntityDamageByEntityEvent event) {
+        if (event.getEntity() instanceof Player && event.getEntity().getWorld() == Bukkit.getWorlds().get(0)) {
+            Entity damager = event.getDamager();
+
+            while (damager instanceof Projectile && ((Projectile) damager).getShooter() instanceof Entity) {
+                damager = (Entity) ((Projectile) damager).getShooter();
+            }
+
+            while (damager instanceof Tameable && ((Tameable) damager).getOwner() instanceof Entity) {
+                damager = (Entity) ((Tameable) damager).getOwner();
+            }
+
+            if (damager instanceof Player && distance(damager.getLocation(), event.getEntity().getWorld().getSpawnLocation()) <= Bukkit.getSpawnRadius()) {
+                event.setCancelled(true);
+            }
+        }
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
