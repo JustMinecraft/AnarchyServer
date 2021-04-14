@@ -31,5 +31,12 @@ public class AnarchyServer extends JavaPlugin {
         discordWebhook = getConfig().getString("discord-webhook");
         
         new AnarchyListener(this);
+        
+        try {
+            Class.forName("puregero.network.VoteEvent");
+            Bukkit.getPluginManager().registerEvents(new VoteListener(), this);
+        } catch (ClassNotFoundException e) {
+            getLogger().info("VoteEvent does not exist, VoteListener will not be registered");
+        }
     }
 }

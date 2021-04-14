@@ -45,6 +45,11 @@
             <artifactId>survival-ranks</artifactId>
             <version>1.0.0-SNAPSHOT</version>
         </dependency>
+        <dependency>
+            <groupId>puregero.network</groupId>
+            <artifactId>purenetwork-api</artifactId>
+            <version>1.0.0-SNAPSHOT</version>
+        </dependency>
     </dependencies>
 
     <distributionManagement>
