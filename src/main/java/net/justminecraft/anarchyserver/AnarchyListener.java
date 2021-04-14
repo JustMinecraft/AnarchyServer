@@ -120,7 +120,7 @@ public class AnarchyListener implements Listener {
         String discordMessage = event.getDeathMessage() + "\n" + (
                 killer == null ?
                 "They have lost " + halfPoints + " points!" :
-                "They have kindly doanted " + halfPoints + " points to " + killer.getName() + "!"
+                "They have kindly donated " + halfPoints + " points to " + killer.getName() + "!"
         );
         
         Discord.send(discordMessage);
