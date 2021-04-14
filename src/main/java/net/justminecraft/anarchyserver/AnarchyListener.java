@@ -1,9 +1,9 @@
 package net.justminecraft.anarchyserver;
 
-import net.justminecraft.survivalranks.Points;
-import net.justminecraft.survivalranks.PointsManager;
-import net.justminecraft.survivalranks.SurvivalRanks;
-import org.bukkit.*;
+import org.bukkit.BanList;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
@@ -15,7 +15,6 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerKickEvent;
-import org.bukkit.event.player.PlayerRespawnEvent;
 
 import java.util.Date;
 
@@ -108,15 +107,23 @@ public class AnarchyListener implements Listener {
             killer = getClosestPlayer(event.getEntity());
         }
         
-        int halfPoints = anarchyServer.getSurvivalRanks().getPoints(event.getEntity()).getPoints() / 2;
-        anarchyServer.getSurvivalRanks().getPoints(event.getEntity()).scalePoints(0.5);
-        anarchyServer.getSurvivalRanks().updateRank(event.getEntity());
+        int halfPoints = AnarchyServer.getSurvivalRanks().getPoints(event.getEntity()).getPoints() / 2;
+        AnarchyServer.getSurvivalRanks().getPoints(event.getEntity()).scalePoints(0.5);
+        AnarchyServer.getSurvivalRanks().updateRank(event.getEntity());
         
         if (killer != null) {
-            anarchyServer.getSurvivalRanks().getPoints(killer).incrementPoints(halfPoints);
+            AnarchyServer.getSurvivalRanks().getPoints(killer).incrementPoints(halfPoints);
             Player k = killer;
             Bukkit.getScheduler().runTask(anarchyServer, () -> k.sendMessage(ChatColor.GREEN + " + " + halfPoints + " points"));
         }
+        
+        String discordMessage = event.getDeathMessage() + "\n" + (
+                killer == null ?
+                "They have lost " + halfPoints + " points!" :
+                "They have kindly doanted " + halfPoints + " points to " + killer.getName() + "!"
+        );
+        
+        Discord.send(discordMessage);
         
         event.getEntity().kickPlayer(event.getDeathMessage() + "\nYou are banned for 24 hours!");
         Bukkit.getBanList(BanList.Type.NAME).addBan(event.getEntity().getName(), event.getDeathMessage(), new Date(System.currentTimeMillis() + 24 * 60 * 60 * 1000), null);
