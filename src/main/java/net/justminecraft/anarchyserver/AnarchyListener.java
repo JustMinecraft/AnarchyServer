@@ -14,6 +14,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBurnEvent;
 import org.bukkit.event.block.BlockExplodeEvent;
+import org.bukkit.event.block.BlockFromToEvent;
 import org.bukkit.event.block.BlockIgniteEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
@@ -120,6 +121,13 @@ public class AnarchyListener implements Listener {
     @EventHandler
     public void onEntityExplode(EntityExplodeEvent event) {
         event.blockList().removeIf(this::isBlockInSpawn);
+    }
+
+    @EventHandler
+    public void onBlockFlow(BlockFromToEvent event) {
+        if (isBlockInSpawn(event.getToBlock())) {
+            event.setCancelled(true);
+        }
     }
 
     private boolean isBlockInSpawn(Block block) {
