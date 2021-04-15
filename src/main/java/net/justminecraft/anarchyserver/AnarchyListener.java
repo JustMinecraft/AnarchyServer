@@ -11,6 +11,7 @@ import org.bukkit.entity.Tameable;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.BlockBurnEvent;
 import org.bukkit.event.block.BlockIgniteEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
@@ -89,6 +90,14 @@ public class AnarchyListener implements Listener {
 
     @EventHandler
     public void onBlockIgnite(BlockIgniteEvent event) {
+        if (event.getBlock().getWorld() == Bukkit.getWorlds().get(0)
+                && distance(event.getBlock().getLocation(), event.getBlock().getWorld().getSpawnLocation()) <= Bukkit.getSpawnRadius()) {
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler
+    public void onBlockIgnite(BlockBurnEvent event) {
         if (event.getBlock().getWorld() == Bukkit.getWorlds().get(0)
                 && distance(event.getBlock().getLocation(), event.getBlock().getWorld().getSpawnLocation()) <= Bukkit.getSpawnRadius()) {
             event.setCancelled(true);
