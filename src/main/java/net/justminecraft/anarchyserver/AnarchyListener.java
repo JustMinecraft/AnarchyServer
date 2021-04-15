@@ -4,6 +4,7 @@ import org.bukkit.BanList;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
+import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
@@ -12,9 +13,11 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBurnEvent;
+import org.bukkit.event.block.BlockExplodeEvent;
 import org.bukkit.event.block.BlockIgniteEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerKickEvent;
@@ -90,18 +93,38 @@ public class AnarchyListener implements Listener {
 
     @EventHandler
     public void onBlockIgnite(BlockIgniteEvent event) {
-        if (event.getBlock().getWorld() == Bukkit.getWorlds().get(0)
-                && distance(event.getBlock().getLocation(), event.getBlock().getWorld().getSpawnLocation()) <= Bukkit.getSpawnRadius()) {
+        if (isBlockInSpawn(event.getBlock())) {
             event.setCancelled(true);
         }
     }
 
     @EventHandler
     public void onBlockIgnite(BlockBurnEvent event) {
-        if (event.getBlock().getWorld() == Bukkit.getWorlds().get(0)
-                && distance(event.getBlock().getLocation(), event.getBlock().getWorld().getSpawnLocation()) <= Bukkit.getSpawnRadius()) {
+        if (isBlockInSpawn(event.getBlock())) {
             event.setCancelled(true);
         }
+    }
+
+    @EventHandler
+    public void onBlockIgnite(BlockExplodeEvent event) {
+        if (isBlockInSpawn(event.getBlock())) {
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler
+    public void onBlockExplode(BlockExplodeEvent event) {
+        event.blockList().removeIf(this::isBlockInSpawn);
+    }
+
+    @EventHandler
+    public void onEntityExplode(EntityExplodeEvent event) {
+        event.blockList().removeIf(this::isBlockInSpawn);
+    }
+
+    private boolean isBlockInSpawn(Block block) {
+        return block.getWorld() == Bukkit.getWorlds().get(0)
+                && distance(block.getLocation(), block.getWorld().getSpawnLocation()) <= Bukkit.getSpawnRadius();
     }
     
     @EventHandler(ignoreCancelled = true)
