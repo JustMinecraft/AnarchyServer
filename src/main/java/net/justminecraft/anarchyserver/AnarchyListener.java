@@ -1,9 +1,6 @@
 package net.justminecraft.anarchyserver;
 
-import org.bukkit.BanList;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Location;
+import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -76,7 +73,7 @@ public class AnarchyListener implements Listener {
         Player closest = null;
         
         for (Player player : location.getWorld().getPlayers()) {
-            if (player != location) {
+            if (player != location && player.getGameMode() == GameMode.SURVIVAL) {
                 double distance = distance(player.getLocation(), location.getLocation());
                 if (distance < closestDistance) {
                     closestDistance = distance;
