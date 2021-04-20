@@ -9,10 +9,7 @@ import org.bukkit.entity.Tameable;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.block.BlockBurnEvent;
-import org.bukkit.event.block.BlockExplodeEvent;
-import org.bukkit.event.block.BlockFromToEvent;
-import org.bukkit.event.block.BlockIgniteEvent;
+import org.bukkit.event.block.*;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
@@ -209,5 +206,25 @@ public class AnarchyListener implements Listener {
             event.getEntity().kickPlayer(event.getDeathMessage() + "\nYou are banned for 24 hours!");
             Bukkit.getBanList(BanList.Type.NAME).addBan(event.getEntity().getName(), event.getDeathMessage(), new Date(System.currentTimeMillis() + 24 * 60 * 60 * 1000), null);
         }, 100);
+    }
+
+    @EventHandler
+    public void onPistonExtend(BlockPistonExtendEvent event) {
+        for (Block block : event.getBlocks()) {
+            if (isBlockInSpawn(block)) {
+                event.setCancelled(true);
+                return;
+            }
+        }
+    }
+
+    @EventHandler
+    public void onPistonRetract(BlockPistonRetractEvent event) {
+        for (Block block : event.getBlocks()) {
+            if (isBlockInSpawn(block)) {
+                event.setCancelled(true);
+                return;
+            }
+        }
     }
 }
