@@ -2,10 +2,7 @@ package net.justminecraft.anarchyserver;
 
 import org.bukkit.*;
 import org.bukkit.block.Block;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.Player;
-import org.bukkit.entity.Projectile;
-import org.bukkit.entity.Tameable;
+import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -127,6 +124,13 @@ public class AnarchyListener implements Listener {
     private boolean isBlockInSpawn(Block block) {
         return block.getWorld() == Bukkit.getWorlds().get(0)
                 && distance(block.getLocation(), block.getWorld().getSpawnLocation()) <= Bukkit.getSpawnRadius();
+    }
+
+    @EventHandler(ignoreCancelled = true)
+    public void onEntityDamage(EntityDamageEvent event) {
+        if (event.getCause() == EntityDamageEvent.DamageCause.SUFFOCATION && event.getEntity() instanceof Vehicle) {
+            event.setCancelled(true);
+        }
     }
     
     @EventHandler(ignoreCancelled = true)
