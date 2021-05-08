@@ -1,9 +1,7 @@
 package net.justminecraft.anarchyserver;
 
 import net.justminecraft.survivalranks.SurvivalRanks;
-import org.bukkit.Achievement;
 import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class AnarchyServer extends JavaPlugin {
@@ -40,13 +38,5 @@ public class AnarchyServer extends JavaPlugin {
         } catch (ClassNotFoundException e) {
             getLogger().info("VoteEvent does not exist, VoteListener will not be registered");
         }
-
-        Bukkit.getScheduler().runTaskTimer(this, () -> {
-            for (Player player : Bukkit.getOnlinePlayers()) {
-                if (!player.hasAchievement(Achievement.OPEN_INVENTORY)) {
-                    player.awardAchievement(Achievement.OPEN_INVENTORY);
-                }
-            }
-        }, 100, 100);
     }
 }

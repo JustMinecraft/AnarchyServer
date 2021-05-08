@@ -5,3 +5,4 @@ main: ${project.groupId}.${project.name}
 author: PureGero
 website: https://github.com/JustMinecraft/${project.name}
 depend: [SurvivalRanks]
+api-version: 1.16
